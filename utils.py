@@ -1,6 +1,7 @@
 import trafilatura
 import requests
 import re
+import numpy as np
 from nltk import tokenize
 
 
@@ -74,12 +75,50 @@ dicNewBookVFL = {"Mateus": 28,
 "Apocalipse": 22}
 
 
-def crawlSite(url: str, chapter: str):
+
+def crawlSite(url: str, chapter: str) -> dict:
+    versiculos = {}
+    response = requests.get(url)
+    htmlContent = response.text
+    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
+    words         = tokenize.word_tokenize(verses, language='portuguese')
+    isFirstCheck  = 1
+    listVersicles = [str(i) for i in range(np.argmax([int(x) for x in words if x.isnumeric()][2:])+1)]
+    verse         = []
+    
+    for word in words:
+        #fazer quebra por numeros
+        if word in listVersicles:
+            
+            if isFirstCheck == 0:
+                #caso 2,3... até n-1
+                versiculos[listVersicles[0]] = " ".join(verse)
+                verse = []
+                listVersicles = listVersicles[1:]
+
+            elif isFirstCheck == 1:
+                #caso 1
+                isFirstCheck = 0
+            
+
+        elif (word not in listVersicles) and (isFirstCheck == 0):
+            #já encontrou os versiculos está preenchendo o recheio
+            verse.append(word)
+
+    #case n
+    versiculos[listVersicles[0]] = " ".join(verse)
+    verse = []
+    listVersicles = listVersicles[1:]
+
+    return versiculos
+
+def crawlSite_depreciado(url: str, chapter: str):
     versiculos = {}
     response = requests.get(url)
     htmlContent = response.text
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
     #print(getAllSentencesBetweenHifen(verses))
+    #text = verses.replace("—", "")
     text = verses.split("\n")
     
     
@@ -100,8 +139,6 @@ def crawlSite(url: str, chapter: str):
                 
                 #contains other versicles at the same string?
                 if len(re.findall('[0-9]+', s)) > 1:
-                    print("aqui")
-                    print(getAllSubVersicles(s))
                     for subVersicle in getAllSubVersicles(s):
                         subVersicle = tokenize.word_tokenize(subVersicle, language='portuguese')
                         tail = subVersicle[1:]
@@ -110,7 +147,7 @@ def crawlSite(url: str, chapter: str):
                             versiculos["1"] = " ".join(tail)
                         else:
                             versiculos[head] = " ".join(tail)
-                    input(versiculos)
+                    
 
             else:
                 #is not first time

@@ -10,8 +10,13 @@ import pandas
 baseUrl = "https://www.biblegateway.com/passage/?"
 
 #PRECISAMOS FAZER UM FOR PARA CADA ESTILO OU VERSÃO
-version      = "VFL"
+version      = "NTLH"
+url = baseUrl + "search=" + "Mateus" + "%20" + "5" + "&version=" + version
 
+versicles = utils.crawlSite(url, 1)
+
+#print(versicles)
+#input()
 
 #velho testamento
 for k, v in utils.dictOldBooksVFL.items():
@@ -31,9 +36,6 @@ for k, v in utils.dicNewBookVFL.items():
 
 
 
-versicles = utils.crawlSite(url, chapter)
-
-print(versicles)
 
 
 
