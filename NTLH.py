@@ -3,6 +3,7 @@ import polars
 import tqdm
 import sys
 
+#TO-DO olhar cada um dos capitulos e remover aqui dentro
 
 baseUrl = "https://www.biblegateway.com/passage/?"
 
@@ -41,7 +42,7 @@ for k, v in tqdm.tqdm(utils.dictOldBooksNTLH.items()):
         livro      = []
     
 
-polars.concat(listDf).write_parquet("./data/NTLHOld.parquet")
+polars.concat(listDf).write_csv("./data/NTLHOld.tsv", separator="\t")
 
 print("Novo Testamento: ")
 #novo testamento
@@ -71,4 +72,4 @@ for k, v in tqdm.tqdm(utils.dicNewBookNTLH.items()):
         capitulo   = []
         livro      = []
 
-polars.concat(listDf).write_parquet("./data/NTLHNew.parquet")
+polars.concat(listDf).write_csv("./data/NTLHNew.tsv", separator="\t")

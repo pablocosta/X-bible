@@ -41,7 +41,7 @@ for k, v in tqdm.tqdm(utils.dictOldBookNVT.items()):
         livro      = []
     
 
-polars.concat(listDf).write_parquet("./data/NVTOld.parquet")
+polars.concat(listDf).write_csv("./data/NVTOld.tsv", separator="\t")
 
 print("Novo Testamento: ")
 #novo testamento
@@ -71,4 +71,4 @@ for k, v in tqdm.tqdm(utils.dicNewBookNVT.items()):
         capitulo   = []
         livro      = []
 
-polars.concat(listDf).write_parquet("./data/NVTNew.parquet")
+polars.concat(listDf).write_csv("./data/NVTNew.tsv", separator="\t")

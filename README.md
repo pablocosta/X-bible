@@ -1,1 +1,1 @@
-# bibleBR
+# Bible Style Corpus

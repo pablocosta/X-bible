@@ -41,4 +41,4 @@ for k, v in tqdm.tqdm(utils.dicNewBookVFL.items()):
         capitulo   = []
         livro      = []
 
-polars.concat(listDf).write_parquet("./data/VFLNew.parquet")
+polars.concat(listDf).write_csv("./data/VFLNew.tsv", separator="\t")

@@ -397,7 +397,7 @@ def crawlSite(url: str) -> dict:
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
     words         = tokenize.word_tokenize(verses, language='portuguese')
     isFirstCheck  = 1
-    listVersicles = [str(i) for i in range(np.max([int(x) for x in words if x.isnumeric()])+1)]
+    listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
     verse         = []
     
     for word in words:
@@ -424,7 +424,7 @@ def crawlSite(url: str) -> dict:
         versiculos[listVersicles[0]] = " ".join(verse)
         verse = []
         listVersicles = listVersicles[1:]
-    print(versiculos)
+    
     return versiculos
 
 def crawlSite_depreciado(url: str, chapter: str):
