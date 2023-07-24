@@ -1,7 +1,6 @@
 import utils
 import polars
 import tqdm
-import sys
 
 #TO-DO olhar cada um dos capitulos e remover aqui dentro
 
