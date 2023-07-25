@@ -3,7 +3,8 @@ import requests
 import re
 import numpy as np
 from nltk import tokenize
-
+import jieba
+import jieba.posseg as pseg
 
 dictOldBooksNTLH = {"Gênesis": 50,
 "Êxodo": 40,
@@ -533,8 +534,123 @@ dictSpanishOld = {"Génesis": 50,
 
 
 
+dictChineseOld = {"创世记": 50,
+"出埃及": 40,
+"利未记": 27,
+"民数记": 36,
+"申命记": 34,
+"约书亚记": 24,
+"士师记": 21,
+"路得记": 4,
+"撒母耳记上": 31,
+"撒母耳记下": 24,
+"列王纪上": 22,
+"列王纪下": 25,
+"历代志上": 29,
+"历代志下": 36,
+"以斯拉记": 10,
+"尼希米记": 13,
+"以斯帖记": 10,
+"约伯记": 42,
+"诗篇": 150,
+"箴言": 31,
+"传道书": 12,
+"雅歌": 8,
+"以赛亚书": 66,
+"耶利米书": 52,
+"耶利米哀歌": 5,
+"以西结书": 48,
+"但以理书": 12,
+"何西阿书": 14,
+"约珥书": 3,
+"阿摩司书": 9,
+"俄巴底亚书": 1,
+"约拿书": 4,
+"弥迦书": 7,
+"那鸿书": 3,
+"哈巴谷书": 3,
+"西番雅书": 3,
+"哈该书": 2,
+"撒迦利亚书": 14,
+"玛拉基书": 4}
 
 
+dicChineseNew = {"马太福音": 28,
+"马可福音": 16,
+"路加福音": 24,
+"约翰福音": 21,
+"使徒行传": 28,
+"罗马书": 16,
+"哥林多前书": 16,
+"哥林多后书": 13,
+"加拉太书": 6,
+"以弗所书": 6,
+"腓立比书": 4,
+"歌罗西书": 4,
+"帖撒罗尼迦前书": 5,
+"帖撒罗尼迦后书": 3,
+"提摩太前书": 6,
+"提摩太后书": 4,
+"提多书": 3,
+"腓利门书": 1,
+"希伯来书": 13,
+"雅各书": 5,
+"彼得前书": 5,
+"彼得后书": 3,
+"约翰一书": 5,
+"约翰二书": 1,
+"约翰三书": 1,
+"犹大书": 1,
+"启示录": 22
+}
+
+from nltk.tokenize.stanford_segmenter import StanfordSegmenter
+
+def crawlSiteChn(url: str) -> dict:
+    versiculos = {}
+    
+    response = requests.get(url)
+    htmlContent = response.text
+    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
+    
+    words = [tk.word for tk in pseg.cut(verses)]
+
+    isFirstCheck  = 1
+    listVersicles = []
+    for x in words:
+        try: 
+            if x.isnumeric():
+                listVersicles.append(str(x))
+        except:
+            pass
+    verse         = []
+    
+    for word in words:
+        #fazer quebra por numeros
+        if word in listVersicles:
+            
+            if isFirstCheck == 0:
+                #caso 2,3... até n-1
+                versiculos[listVersicles[0]] = " ".join(verse)
+                verse = []
+                listVersicles = listVersicles[1:]
+
+            elif isFirstCheck == 1:
+                #caso 1
+                isFirstCheck = 0
+            
+
+        elif (word not in listVersicles) and (isFirstCheck == 0):
+            #já encontrou os versiculos está preenchendo o recheio
+            verse.append(word)
+
+    #case n
+    if len(listVersicles) >= 1:
+        versiculos[listVersicles[0]] = " ".join(verse)
+        verse = []
+        listVersicles = listVersicles[1:]
+    
+    return versiculos
 
 
 def toDict(estilo : list, capitulo : list, livro : list, versiculos : list, textos : list) -> dict:
