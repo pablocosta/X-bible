@@ -9,7 +9,7 @@ baseUrl = "https://www.biblegateway.com/passage/?"
 
 #PRECISAMOS FAZER UM FOR PARA CADA ESTILO OU VERSÃO "LBLA", "JBS" "DHH", "NBLA", "NBV", "NTV", "NVI", "CST", "PDT", "BLP", "BLPH", "RVA-2015", "RVC", "RVR1690", "RVR1995",
 
-for version in ["CCB", "CCBT", "ERV-ZH", "CNVS", "CNVT", "CSBS", "CSBT", "CUVS", "CUV", "CUVMPS", "CUVMPT", "RCU17SS", "RCU17TS"]:
+for version in ["BDS", "LSG", "NEG1979", "SG21"]:
 
     #version      = "ASV"
 
@@ -24,12 +24,12 @@ for version in ["CCB", "CCBT", "ERV-ZH", "CNVS", "CNVT", "CSBS", "CSBT", "CUVS",
     estilo     = []
     capitulo   = []
     livro      = []
-    for k, v in tqdm.tqdm(utils.dictChineseOld.items()):
+    for k, v in tqdm.tqdm(utils.dictFrenchOld.items()):
         
         for chapter in range(1, v+1):
             url = baseUrl + "search=" + k + "%20" + str(chapter) + "&version=" + version
             print(url)
-            dicionarioUnidade = utils.crawlSiteChn(url)
+            dicionarioUnidade = utils.crawlSiteFRA(url)
             versiculos.extend([k for k,_ in dicionarioUnidade.items()])
             textos.extend([v for _,v in dicionarioUnidade.items()])
 
@@ -45,7 +45,7 @@ for version in ["CCB", "CCBT", "ERV-ZH", "CNVS", "CNVT", "CSBS", "CSBT", "CUVS",
             livro      = []
         
 
-    polars.concat(listDf).write_csv("./data/CHN/"+version+"Old.tsv", separator="\t")
+    polars.concat(listDf).write_csv("./data/FR/"+version+"Old.tsv", separator="\t")
 
     print("Novo Testamento: ")
     #novo testamento
@@ -55,12 +55,12 @@ for version in ["CCB", "CCBT", "ERV-ZH", "CNVS", "CNVT", "CSBS", "CSBT", "CUVS",
     estilo     = []
     capitulo   = []
     livro      = []
-    for k, v in tqdm.tqdm(utils.dicChineseNew.items()):
+    for k, v in tqdm.tqdm(utils.dicFenchNew.items()):
         
         for chapter in range(1, v+1):
             url = baseUrl + "search=" + k + "%20" + str(chapter) + "&version=" + version
             print(url)
-            dicionarioUnidade = utils.crawlSiteChn(url)
+            dicionarioUnidade = utils.crawlSiteFRA(url)
             versiculos.extend([k for k,_ in dicionarioUnidade.items()])
             textos.extend([v for _,v in dicionarioUnidade.items()])
 
@@ -75,4 +75,4 @@ for version in ["CCB", "CCBT", "ERV-ZH", "CNVS", "CNVT", "CSBS", "CSBT", "CUVS",
             capitulo   = []
             livro      = []
 
-    polars.concat(listDf).write_csv("./data/CHN/"+version+"New.tsv", separator="\t")
+    polars.concat(listDf).write_csv("./data/FR/"+version+"New.tsv", separator="\t")
