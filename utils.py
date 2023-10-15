@@ -2,7 +2,7 @@ import trafilatura
 import requests
 import re
 import numpy as np
-from nltk import tokenize
+from sacremoses import MosesDetokenizer, MosesTokenizer
 import jieba
 import jieba.posseg as pseg
 
@@ -661,8 +661,87 @@ def crawlSiteEsp(url: str) -> dict:
     versiculos = {}
     response = requests.get(url)
     htmlContent = response.text
+    tokenizer  = MosesTokenizer("es")
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
-    words         = tokenize.word_tokenize(verses, language='spanish')
+    words         = tokenizer.tokenize(verses)
+    isFirstCheck  = 1
+    listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
+    verse         = []
+    
+    for word in words:
+        #fazer quebra por numeros
+        if word in listVersicles:
+            
+            if isFirstCheck == 0:
+                #caso 2,3... até n-1
+                versiculos[listVersicles[0]] = " ".join(verse)
+                verse = []
+                listVersicles = listVersicles[1:]
+
+            elif isFirstCheck == 1:
+                #caso 1
+                isFirstCheck = 0
+            
+
+        elif (word not in listVersicles) and (isFirstCheck == 0):
+            #já encontrou os versiculos está preenchendo o recheio
+            verse.append(word)
+
+    #case n
+    if len(listVersicles) >= 1:
+        versiculos[listVersicles[0]] = " ".join(verse)
+        verse = []
+        listVersicles = listVersicles[1:]
+    
+    return versiculos
+
+
+def crawlSiteFRA(url: str) -> dict:
+    versiculos = {}
+    response = requests.get(url)
+    htmlContent = response.text
+    tokenizer  = MosesTokenizer("fr")
+    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
+    words         = tokenizer.tokenize(verses)
+    isFirstCheck  = 1
+    listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
+    verse         = []
+    
+    for word in words:
+        #fazer quebra por numeros
+        if word in listVersicles:
+            
+            if isFirstCheck == 0:
+                #caso 2,3... até n-1
+                versiculos[listVersicles[0]] = " ".join(verse)
+                verse = []
+                listVersicles = listVersicles[1:]
+
+            elif isFirstCheck == 1:
+                #caso 1
+                isFirstCheck = 0
+            
+
+        elif (word not in listVersicles) and (isFirstCheck == 0):
+            #já encontrou os versiculos está preenchendo o recheio
+            verse.append(word)
+
+    #case n
+    if len(listVersicles) >= 1:
+        versiculos[listVersicles[0]] = " ".join(verse)
+        verse = []
+        listVersicles = listVersicles[1:]
+    
+    return versiculos
+
+
+def crawlSiteITA(url: str) -> dict:
+    versiculos = {}
+    response = requests.get(url)
+    htmlContent = response.text
+    tokenizer  = MosesTokenizer("it")
+    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
+    words         = tokenizer.tokenize(verses)
     isFirstCheck  = 1
     listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
     verse         = []
@@ -699,8 +778,9 @@ def crawlSiteEng(url: str) -> dict:
     versiculos = {}
     response = requests.get(url)
     htmlContent = response.text
+    tokenizer  = MosesTokenizer("en")
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
-    words         = tokenize.word_tokenize(verses, language='english')
+    words         = tokenizer.tokenize(verses)
     isFirstCheck  = 1
     listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
     verse         = []
@@ -737,8 +817,9 @@ def crawlSite(url: str) -> dict:
     versiculos = {}
     response = requests.get(url)
     htmlContent = response.text
+    tokenizer  = MosesTokenizer("pt")
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
-    words         = tokenize.word_tokenize(verses, language='portuguese')
+    words         = tokenizer.tokenize(verses)
     isFirstCheck  = 1
     listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
     verse         = []
