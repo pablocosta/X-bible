@@ -13,6 +13,7 @@ version      = "VFL"
 
 
 print("Novo Testamento: ")
+
 #novo testamento
 listDf = []
 versiculos = []
