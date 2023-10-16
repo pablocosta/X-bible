@@ -670,6 +670,77 @@ dictItalianNew = {"Matteo": 28,
 "Apocalisse": 22
 }
 
+dictGermanOld = {"1%20Mose": 50,
+"2%20Mose": 40,
+"3%20Mose": 27,
+"4%20Mose": 36,
+"5%20Mose": 34,
+"Josua": 24,
+"Richter": 21,
+"Ruth": 4,
+"1%20Samuel": 31,
+"2%20Samuel": 24,
+"1%20Könige": 22,
+"2%20Könige": 25,
+"1%20Chronik": 29,
+"2%20Chronik": 36,
+"Esra": 10,
+"Nehemia": 13,
+"Ester": 10,
+"Hiob": 42,
+"Psalmen": 150,
+"Sprüche": 31,
+"Prediger": 12,
+"Hohelied": 8,
+"Jesaja": 66,
+"Jeremia": 52,
+"Klagelieder": 5,
+"Hesekiel": 48,
+"Daniel": 12,
+"Hosea": 14,
+"Joel": 3,
+"Amos": 9,
+"Obadja": 1,
+"Jona": 4,
+"Micha": 7,
+"Nahum": 3,
+"Habakuk": 3,
+"Zephanja": 3,
+"Haggai": 2,
+"Sacharja": 14,
+"Maleachi": 4}
+
+
+
+dictGermanNew = {"Matthäus": 28,
+"Markus": 16,
+"Lukas": 24,
+"Johannes": 21,
+"Apostelgeschichte": 28,
+"Römer": 16,
+"1%20Korinther": 16,
+"2%20Korinther": 13,
+"Galater": 6,
+"Epheser": 6,
+"Philipper": 4,
+"Kolosser": 4,
+"1%20Thessalonicher": 5,
+"2%20Thessalonicher": 3,
+"1%20Timotheus": 6,
+"2%20Timotheus": 4,
+"Titus": 3,
+"Philemon": 1,
+"Hebräer": 13,
+"Jakobus": 5,
+"1%20Petrus": 5,
+"2%20Petrus": 3,
+"1%20Johannes": 5,
+"2%20Johannes": 1,
+"3%20Johannes": 1,
+"Judas": 1,
+"Offenbarung": 22
+}
+
 from nltk.tokenize.stanford_segmenter import StanfordSegmenter
 
 def crawlSiteChn(url: str) -> dict:
@@ -767,6 +838,44 @@ def crawlSiteFRA(url: str) -> dict:
     response = requests.get(url)
     htmlContent = response.text
     tokenizer  = MosesTokenizer("fr")
+    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
+    words         = tokenizer.tokenize(verses)
+    isFirstCheck  = 1
+    listVersicles = [str(i) for i in [int(x) for x in words if x.isnumeric()]]
+    verse         = []
+    
+    for word in words:
+        #fazer quebra por numeros
+        if word in listVersicles:
+            
+            if isFirstCheck == 0:
+                #caso 2,3... até n-1
+                versiculos[listVersicles[0]] = " ".join(verse)
+                verse = []
+                listVersicles = listVersicles[1:]
+
+            elif isFirstCheck == 1:
+                #caso 1
+                isFirstCheck = 0
+            
+
+        elif (word not in listVersicles) and (isFirstCheck == 0):
+            #já encontrou os versiculos está preenchendo o recheio
+            verse.append(word)
+
+    #case n
+    if len(listVersicles) >= 1:
+        versiculos[listVersicles[0]] = " ".join(verse)
+        verse = []
+        listVersicles = listVersicles[1:]
+    
+    return versiculos
+
+def crawlSiteGER(url: str) -> dict:
+    versiculos = {}
+    response = requests.get(url)
+    htmlContent = response.text
+    tokenizer  = MosesTokenizer("de")
     verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
     words         = tokenizer.tokenize(verses)
     isFirstCheck  = 1
