@@ -741,54 +741,6 @@ dictGermanNew = {"Matthäus": 28,
 "Offenbarung": 22
 }
 
-from nltk.tokenize.stanford_segmenter import StanfordSegmenter
-
-def crawlSiteChn(url: str) -> dict:
-    versiculos = {}
-    
-    response = requests.get(url)
-    htmlContent = response.text
-    verses = trafilatura.extract(htmlContent, include_images=False, include_formatting=False)
-    
-    words = [tk.word for tk in pseg.cut(verses)]
-
-    isFirstCheck  = 1
-    listVersicles = []
-    for x in words:
-        try: 
-            if x.isnumeric():
-                listVersicles.append(str(x))
-        except:
-            pass
-    verse         = []
-    
-    for word in words:
-        #fazer quebra por numeros
-        if word in listVersicles:
-            
-            if isFirstCheck == 0:
-                #caso 2,3... até n-1
-                versiculos[listVersicles[0]] = " ".join(verse)
-                verse = []
-                listVersicles = listVersicles[1:]
-
-            elif isFirstCheck == 1:
-                #caso 1
-                isFirstCheck = 0
-            
-
-        elif (word not in listVersicles) and (isFirstCheck == 0):
-            #já encontrou os versiculos está preenchendo o recheio
-            verse.append(word)
-
-    #case n
-    if len(listVersicles) >= 1:
-        versiculos[listVersicles[0]] = " ".join(verse)
-        verse = []
-        listVersicles = listVersicles[1:]
-    
-    return versiculos
-
 
 def toDict(estilo : list, capitulo : list, livro : list, versiculos : list, textos : list) -> dict:
     return {"estilo": estilo, "livro": livro,  "capitulo": capitulo, "versiculo": versiculos, "texto": textos}
